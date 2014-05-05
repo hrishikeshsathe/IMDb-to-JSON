@@ -15,9 +15,9 @@ class JSONAttributes:
         self.actors = []
         
     def print_all(self):
-        print(self.title)
-        print(self.duration)
-        print(self.genre)
-        print(self.rating)
-        print(self.description)
-        print(self.actors)
+        print("Title: ",self.title)
+        print("Duration: ",self.duration)
+        print("Genre: ",self.genre)
+        print("Rating: ",self.rating)
+        print("Description: ",self.description)
+        print("Actors: ",self.actors)

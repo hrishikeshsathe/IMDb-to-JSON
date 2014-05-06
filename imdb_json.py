@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
+from season_info import season_info
 import requests
 import json_attributes
 
-# function to get content from the url in text form using the 'requests' api. 
-# cannot use BeautifulSoup as it is not an HTTPClient
-# accepts url and returns HTML code as a string
+
+#function to get content from the url in text form using the 'requests' api. 
+#cannot use BeautifulSoup as it is not an HTTPClient
+#accepts url and returns HTML code as a string
 def get_content(url):
     r = requests.get(url)
     return r.text
@@ -70,7 +72,29 @@ for i in range(1,len(names)):
 print("Overview info:-")
 json.print_all()
 
+#traverse to get the number of seasons by searching number of links in the titleTVSeries block
+start_index = content.find('titleTVSeries')
+content = content[start_index:-1]
+end_index = content.find('/div')
+soup = BeautifulSoup(content[:end_index])
+seasons = soup.findAll('a')
 
-
-
-
+# change the url and store in another variable
+# usually imdb pages for seasons are in the format http://www.imdb.com//title/title_code/episode?season=n where n is a number
+index = url.find('?')
+new_url = url[:index]
+#add the episode info to an object of season_info. add this object to the json_attributes.seasons(this is a list of seasons)
+for i in range(0,2):
+    season = season_info()
+    url = new_url+'episodes?season='+str(i+1)
+    season_content = get_content(url)
+    soup = BeautifulSoup(season_content)
+    episode_list = soup.find(name='div',attrs={'class','eplist'})
+    name = episode_list.findAll(itemprop='name')
+    airdate = episode_list.findAll(name='div',attrs={'class','airdate'})
+    description = episode_list.findAll(itemprop='description')
+    for i in range(0,len(name)):
+        season.episode_name.append(name[i].text.strip())
+        season.episode_airdate.append(airdate[i].text.strip())
+        season.episode_overview.append(description[i].text.strip())
+    json.seasons.append(season)

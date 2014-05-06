@@ -1,3 +1,4 @@
+
 class JSONAttributes:
     title = ''
     duration = ''
@@ -5,7 +6,7 @@ class JSONAttributes:
     rating= 0.0
     description = ''
     actors = []
-    
+    seasons = []
     def __init__(self):
         self.title = ''
         self.duration = ''

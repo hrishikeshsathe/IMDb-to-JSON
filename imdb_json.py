@@ -70,7 +70,7 @@ for i in range(1,len(names)):
     json.actors.append(names[i].text)
 
 print("Overview info:-")
-json.print_all()
+json.print_overview()
 
 #traverse to get the number of seasons by searching number of links in the titleTVSeries block
 start_index = content.find('titleTVSeries')
@@ -93,8 +93,11 @@ for i in range(0,2):
     name = episode_list.findAll(itemprop='name')
     airdate = episode_list.findAll(name='div',attrs={'class','airdate'})
     description = episode_list.findAll(itemprop='description')
-    for i in range(0,len(name)):
-        season.episode_name.append(name[i].text.strip())
-        season.episode_airdate.append(airdate[i].text.strip())
-        season.episode_overview.append(description[i].text.strip())
+    for j in range(0,len(name)):
+        season.season_number = i+1
+        season.episode_name.append(name[j].text.strip())
+        season.episode_airdate.append(airdate[j].text.strip())
+        season.episode_overview.append(description[j].text.strip())
     json.seasons.append(season)
+
+json.print_season_info()

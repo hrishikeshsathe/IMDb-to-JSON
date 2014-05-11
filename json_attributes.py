@@ -15,10 +15,19 @@ class JSONAttributes:
         self.description = ''
         self.actors = []
         
-    def print_all(self):
+    def print_overview(self):
         print("Title: ",self.title)
         print("Duration: ",self.duration)
         print("Genre: ",self.genre)
         print("Rating: ",self.rating)
         print("Description: ",self.description)
         print("Actors: ",self.actors)
+    
+    def print_season_info(self):
+        for season in self.seasons:
+            print('Season: ',season.season_number)
+            for i in range(0,len(season.episode_name)):
+                print('Episode: ',i+1)
+                print('Title: ',season.episode_name[i])
+                print('Air date: ',season.episode_airdate[i])
+                print('Overview: ',season.episode_overview[i])

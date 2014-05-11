@@ -4,6 +4,12 @@ class season_info:
     episode_overview = []
     episode_airdate = []
     
+    def __init__(self):
+        self.season_number = 0
+        self.episode_name = []
+        self.episode_overview = []
+        self.episode_airdate = []
+    
     def print_all(self):
         for i in range(0,len(self.episode_name)):
             print('Episode: ',i+1)

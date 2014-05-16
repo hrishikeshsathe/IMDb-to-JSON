@@ -11,6 +11,7 @@ def get_content(url):
     r = requests.get(url)
     return r.text
 
+
 #function to get the overview info as mentioned on the IMDb page
 def get_overview(page_content):
     #get the HTML code which gives an overview of the show/movie
@@ -42,15 +43,15 @@ def get_overview(page_content):
     json_temp.duration = tag.text.strip()
     for item in genre:
         json_temp.genre.append(item.text)
-        json_temp.rating = rating.text.strip()
-        json_temp.description = description.text.strip()
-        json_temp.title = names[0].text
-        for i in range(1,len(names)):
-            json_temp.actors.append(names[i].text)
+    json_temp.rating = rating.text.strip()
+    json_temp.description = description.text.strip()
+    json_temp.title = names[0].text
+    for i in range(1,len(names)):
+        json_temp.actors.append(names[i].text)
     return json_temp
 
 
-
+#get info for seasons and episodes
 def get_seasons_info(page_content,json,url):
     #traverse to get the number of seasons by searching number of links in the titleTVSeries block
     start_index = page_content.find('titleTVSeries')
@@ -81,7 +82,33 @@ def get_seasons_info(page_content,json,url):
         json.seasons.append(season)
     return json
 
-
+#write data into file as json object
+def write_json(json):
+    file = open(json.title+'.json','w')
+    file.write('{\n')
+    file.write('"title":"'+json.title+'",\n')
+    file.write('"duration":"'+json.duration+'",\n')
+    file.write('"genre":{')
+    file.write(','.join('"'+x+'"' for x in json.genre))
+    file.write('},\n')
+    file.write('"rating":"'+json.rating+'",\n')
+    file.write('"description":"'+json.description+",\n")
+    file.write('"actors":{')
+    file.write(','.join('"'+x+'"' for x in json.actors))
+    file.write('},\n')
+    file.write('"seasons":{\n')
+    for season in json.seasons:
+        file.write('{')
+        file.write(','.join('\n{"number":"'+str(i+1)+
+                            '","episode_title":"'+season.episode_name[i]+
+                            '","airdate":"'+season.episode_airdate[i]+
+                            '","episode_overview":"'+season.episode_overview[i]+'"}' 
+                            for i in range(0,len(season.episode_name))))
+        file.write('}\n')
+    file.close()
+    print('Writing done')
+    
+    
 # ask the user for input. user can input show name or movie name.
 user_input = input("Enter the name of the movie/series to create the JSON")
 url = "http://www.imdb.com/find?q="+user_input
@@ -108,4 +135,4 @@ content = get_content(url)
 #get overview info and season+episode list
 json = get_overview(content)
 json = get_seasons_info(content,json,url)
-json.print_season_info()
+write_json(json)

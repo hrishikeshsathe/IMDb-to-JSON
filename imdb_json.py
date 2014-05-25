@@ -78,33 +78,36 @@ def get_seasons_info(page_content,json,url):
             season.season_number = i+1
             season.episode_name.append(name[j].text.strip())
             season.episode_airdate.append(airdate[j].text.strip())
-            season.episode_overview.append(description[j].text.strip())
+            temp_description = description[j].text.replace('"','') 
+            season.episode_overview.append(temp_description.strip())
         json.seasons.append(season)
     return json
 
 #write data into file as json object
 def write_json(json):
+    
     file = open(json.title+'.json','w')
     file.write('{\n')
     file.write('"title":"'+json.title+'",\n')
     file.write('"duration":"'+json.duration+'",\n')
-    file.write('"genre":{')
+    file.write('"genre":[')
     file.write(','.join('"'+x+'"' for x in json.genre))
-    file.write('},\n')
+    file.write('],\n')
     file.write('"rating":"'+json.rating+'",\n')
-    file.write('"description":"'+json.description+",\n")
-    file.write('"actors":{')
+    file.write('"description":"'+json.description+'",\n')
+    file.write('"actors":[')
     file.write(','.join('"'+x+'"' for x in json.actors))
-    file.write('},\n')
-    file.write('"seasons":{\n')
+    file.write('],\n')
+    file.write('"seasons":[')
     for season in json.seasons:
-        file.write('{')
+        file.write('\n[')
         file.write(','.join('\n{"number":"'+str(i+1)+
                             '","episode_title":"'+season.episode_name[i]+
                             '","airdate":"'+season.episode_airdate[i]+
                             '","episode_overview":"'+season.episode_overview[i]+'"}' 
                             for i in range(0,len(season.episode_name))))
-        file.write('}\n')
+        file.write('],\n')
+    file.write(']\n}')
     file.close()
     print('Writing done')
     

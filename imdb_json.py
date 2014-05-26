@@ -99,19 +99,22 @@ def write_json(json):
     file.write(','.join('"'+x+'"' for x in json.actors))
     file.write('],\n')
     file.write('"seasons":[')
-    for season in json.seasons:
-        file.write('\n[')
-        file.write(','.join('\n{"number":"'+str(i+1)+
-                            '","episode_title":"'+season.episode_name[i]+
-                            '","airdate":"'+season.episode_airdate[i]+
-                            '","episode_overview":"'+season.episode_overview[i]+'"}' 
-                            for i in range(0,len(season.episode_name))))
-        file.write('],\n')
+    file.write(','.join('['+episode_list_as_string(season)+']\n' for season in json.seasons))
     file.write(']\n}')
     file.close()
     print('Writing done')
+ 
+#return an episode list as string   
+def episode_list_as_string(season):
+    string = (',').join('\n{"number":"'+str(i+1)+
+                            '","episode_title":"'+season.episode_name[i]+
+                            '","airdate":"'+season.episode_airdate[i]+
+                            '","episode_overview":"'+season.episode_overview[i]+'"}' 
+                            for i in range(0,len(season.episode_name)))
+    return string
     
-    
+
+
 # ask the user for input. user can input show name or movie name.
 user_input = input("Enter the name of the movie/series to create the JSON")
 url = "http://www.imdb.com/find?q="+user_input

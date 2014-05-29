@@ -36,8 +36,13 @@ def get_overview(page_content):
     #get a short description of the show/movie
     description = soup.find(itemprop='description')
     
-    #get the show/movie title and a short cast list
-    names = soup.findAll(itemprop='name')
+    #get title of the series
+    title = soup.find(itemprop='name')
+    
+    #get the short cast list
+    temp_names = soup.findAll(itemprop='actors')
+    temp_soup = BeautifulSoup(str(temp_names[0]))
+    actor_names = temp_soup.findAll('a')
     
     #set the values in the json object
     json_temp.duration = tag.text.strip()
@@ -45,9 +50,9 @@ def get_overview(page_content):
         json_temp.genre.append(item.text)
     json_temp.rating = rating.text.strip()
     json_temp.description = description.text.strip()
-    json_temp.title = names[0].text
-    for i in range(1,len(names)):
-        json_temp.actors.append(names[i].text)
+    json_temp.title = title.text.strip()
+    for i in range(0,len(actor_names)-1):
+        json_temp.actors.append(actor_names[i].text.strip())
     return json_temp
 
 

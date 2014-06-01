@@ -39,10 +39,26 @@ def get_overview(page_content):
     #get title of the series
     title = soup.find(itemprop='name')
     
+    #get the creator
+    creators = []
+    temp_creators = soup.find(itemprop='creator')
+    if temp_creators != None:
+        temp_soup = BeautifulSoup(str(temp_creators))
+        temp_creators = temp_soup.findAll('a')
+        for item in temp_creators:
+            if item.text.find('credits') == -1:
+                creators.append(item.text)
+    else:
+        creators = []
+    
     #get the director if its a movie
     director = soup.find(itemprop='director')
-    temp_soup = BeautifulSoup(str(director))
-    director = temp_soup.find('a')
+    if director != None:
+        temp_soup = BeautifulSoup(str(director))
+        director = temp_soup.find('a')
+        director = director.text.strip()
+    else:
+        director = ''
     
     #get the short cast list
     temp_names = soup.findAll(itemprop='actors')
@@ -56,10 +72,8 @@ def get_overview(page_content):
     json_temp.rating = rating.text.strip()
     json_temp.description = description.text.strip()
     json_temp.title = title.text.strip()
-    if director == None:
-        json_temp.director = ''
-    else:
-        json_temp.director = director.text.strip()
+    json_temp.director = director
+    json_temp.creators = creators
     for i in range(0,len(actor_names)-1):
         json_temp.actors.append(actor_names[i].text.strip())
     return json_temp
@@ -110,6 +124,9 @@ def write_json(json):
     file.write('"rating":"'+json.rating+'",\n')
     file.write('"description":"'+json.description+'",\n')
     file.write('"director":"'+json.director+'",\n')
+    file.write('"creators":[')
+    file.write(','.join('"'+x+'"' for x in json.creators))
+    file.write('],\n')
     file.write('"actors":[')
     file.write(','.join('"'+x+'"' for x in json.actors))
     file.write('],\n')

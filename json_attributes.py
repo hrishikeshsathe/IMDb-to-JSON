@@ -8,6 +8,7 @@ class JSONAttributes:
     actors = []
     seasons = []
     director = ''
+    creators = []
     def __init__(self):
         self.title = ''
         self.duration = ''
@@ -16,6 +17,7 @@ class JSONAttributes:
         self.description = ''
         self.actors = []
         self.director = ''
+        self.creators = []
         
     def print_overview(self):
         print("Title: ",self.title)
@@ -23,8 +25,10 @@ class JSONAttributes:
         print("Genre: ",self.genre)
         print("Rating: ",self.rating)
         print("Description: ",self.description)
+        print("Creators: ",self.creators)
         print("Director: ",self.director)
         print("Actors: ",self.actors)
+        
     
     def print_season_info(self):
         for season in self.seasons:

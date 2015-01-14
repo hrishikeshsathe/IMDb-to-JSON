@@ -4,16 +4,18 @@ import requests
 import json_attributes
 
 
-#function to get content from the url in text form using the 'requests' api. 
-#cannot use BeautifulSoup as it is not an HTTPClient
-#accepts url and returns HTML code as a string
+""" function to get content from the url in text form using the 'requests' api. 
+cannot use BeautifulSoup as it is not an HTTPClient
+accepts url and returns HTML code as a string
+"""
 def get_content(url):
     r = requests.get(url)
     return r.text
 
 
-#function to get the overview info as mentioned on the IMDb page
+""" function to get the overview info as mentioned on the IMDb page """
 def get_overview(page_content):
+   
     #get the HTML code which gives an overview of the show/movie
     start_index = page_content.find("overview-top")
     end_index = page_content.find("overview-bottom")
@@ -79,7 +81,7 @@ def get_overview(page_content):
     return json_temp
 
 
-#get info for seasons and episodes
+""" get info for seasons and episodes """
 def get_seasons_info(page_content,json,url):
     #traverse to get the number of seasons by searching number of links in the titleTVSeries block
     start_index = page_content.find('titleTVSeries')
@@ -111,7 +113,7 @@ def get_seasons_info(page_content,json,url):
         json.seasons.append(season)
     return json
 
-#write data into file as json object
+""" write data into file as json object """
 def write_json(json):
     
     file = open(json.title+'.json','w')
@@ -136,7 +138,7 @@ def write_json(json):
     file.close()
     print('Writing done')
  
-#return an episode list as string   
+""" return an episode list as string   """
 def episode_list_as_string(season):
     string = (',').join('\n{"number":"'+str(i+1)+
                             '","episode_title":"'+season.episode_name[i]+

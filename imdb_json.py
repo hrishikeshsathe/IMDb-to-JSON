@@ -4,7 +4,6 @@ import requests
 import json_attributes
 
 
-
 def get_content(url):
     
     """ function to get content from the url in text form using the 'requests' api. 
@@ -16,12 +15,9 @@ accepts url and returns HTML code as a string
     return r.text
 
 
-
 def get_overview(page_content):
     
-   """ function to get the overview info as mentioned on the IMDb page """
-   
-    #get the HTML code which gives an overview of the show/movie
+    """ function to get the overview info as mentioned on the IMDb page """
     start_index = page_content.find("overview-top")
     end_index = page_content.find("overview-bottom")
     
@@ -81,7 +77,7 @@ def get_overview(page_content):
     json_temp.title = title.text.strip()
     json_temp.director = director
     json_temp.creators = creators
-    for i in range(0,len(actor_names)-1):
+    for i in range(0, len(actor_names)-1):
         json_temp.actors.append(actor_names[i].text.strip())
     return json_temp
 
@@ -91,39 +87,41 @@ def get_seasons_info(page_content,json,url):
     """ get info for seasons and episodes """
     
     #traverse to get the number of seasons by searching number of links in the titleTVSeries block
-    start_index = page_content.find('titleTVSeries')
+    start_index = page_content.find('title-episode-widget')
     page_content = page_content[start_index:-1]
-    end_index = page_content.find('/div')
+    end_index = page_content.find('article highlighted')
     soup = BeautifulSoup(page_content[:end_index])
     number_of_seasons = soup.findAll('a')
+    print(start_index, end_index)
     
     # change the url and store in another variable
     # usually imdb pages for seasons are in the format http://www.imdb.com//title/title_code/episode?season=n where n is a number
     index = url.find('?')
     new_url = url[:index]
     #add the episode info to an object of season_info. add this object to the json_attributes.seasons(this is a list of seasons)
-    for i in range(0,len(number_of_seasons)):
+    for i in range(0, len(number_of_seasons)):
         season = season_info()
         url = new_url+'episodes?season='+str(i+1)
         season_content = get_content(url)
         soup = BeautifulSoup(season_content)
-        episode_list = soup.find(name='div',attrs={'class','eplist'})
+        episode_list = soup.find(name='div', attrs={'class', 'eplist'})
         name = episode_list.findAll(itemprop='name')
-        airdate = episode_list.findAll(name='div',attrs={'class','airdate'})
+        airdate = episode_list.findAll(name='div', attrs={'class', 'airdate'})
         description = episode_list.findAll(itemprop='description')
-        for j in range(0,len(name)):
+        for j in range(0, len(name)):
             season.season_number = i+1
             season.episode_name.append(name[j].text.strip())
             season.episode_airdate.append(airdate[j].text.strip())
-            temp_description = description[j].text.replace('"','') 
+            temp_description = description[j].text.replace('"', '')
             season.episode_overview.append(temp_description.strip())
+            season.print_all()
         json.seasons.append(season)
     return json
 
 
 def write_json(json):
     
-   """ write data into file as json object """
+    """ write data into file as json object """
    
     file = open(json.title+'.json','w')
     file.write('{\n')
@@ -152,14 +150,12 @@ def episode_list_as_string(season):
     
     """ return an episode list as string   """
     
-    string = (',').join('\n{"number":"'+str(i+1)+
+    string = ','.join('\n{"number":"'+str(i+1)+
                             '","episode_title":"'+season.episode_name[i]+
                             '","airdate":"'+season.episode_airdate[i]+
                             '","episode_overview":"'+season.episode_overview[i]+'"}' 
                             for i in range(0,len(season.episode_name)))
     return string
-    
-
 
 # ask the user for input. user can input show name or movie name.
 user_input = input("Enter the name of the movie/series to create the JSON")
@@ -186,5 +182,5 @@ content = get_content(url)
 
 #get overview info and season+episode list
 json = get_overview(content)
-json = get_seasons_info(content,json,url)
+json = get_seasons_info(content, json, url)
 write_json(json)
